@@ -1,6 +1,4 @@
-from flask import Flask, request, render_template, redirect, session
-import sqlite3
-from datetime import datetime
+from flask import Flask
 from src.config.config import port, debug
 
 app = Flask(__name__)
