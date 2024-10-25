@@ -1,6 +1,8 @@
 from flask import Blueprint, request, render_template, redirect
 import requests
 from src.config.config import apiurl
+import src.models.medida as models
+from pydantic import ValidationError
 
 medida_bp = Blueprint('medida', __name__)
 
@@ -41,23 +43,33 @@ def inicio():
 # Adição de medidas
 @medida_bp.route("/inicio/adicionar", methods=['GET','POST'])
 def adicao():
+	# Obtendo o token do cookie
+	token = request.cookies.get('token')
+	if not token:
+		# Se o token não estiver presente, redirecionar para a página de login
+		return redirect("/login")
 	# Envio do formulário
 	if request.method == 'POST':
-		logado = "Fulano"
 		#Obtendo dados enviados pelo formulário
 		dados = request.form
-		#data = request.form.get('data')
-		#peso = request.form.get('peso')
-		#ombro = request.form.get('ombro')
-		#peito = request.form.get('peito')
-		#braco = request.form.get('braco')
-		#antebraco = request.form.get('antebraco')
-		#cintura = request.form.get('cintura')
-		#quadril = request.form.get('quadril')
-		#coxa = request.form.get('coxa')
-		#panturrilha = request.form.get('panturrilha')
-		
-		return render_template("adicionar.html",sucesso=True)
+		# Validando dados
+		try:
+			medida = models.Medida(**dados)
+		except ValidationError:
+			msgErro = "Preencha os campos corretamente"
+			return render_template("adicionar.html",msgErro=msgErro)
+		medidaDict = medida.model_dump()
+		# Fazendo requisição a API para buscar dados do usuário logado
+		headers = {'Authorization': f'Bearer {token}'}
+		respostaAPI = requests.post(f'{apiurl}/medidas', json=medidaDict, headers=headers)
+		if respostaAPI.status_code == 201:
+			return render_template("adicionar.html",sucesso=True)
+		elif respostaAPI.status_code == 400:
+			msgErro = "Preencha os campos corretamente"
+			return render_template("adicionar.html",msgErro=msgErro)
+		else:
+			msgErro = "Ocorreu um erro em nosso servidor, tente novamente" #500
+			return render_template("adicionar.html",msgErro=msgErro)
 	# Renderização da página de adição de medidas
 	if request.method == 'GET':
 		return render_template("adicionar.html")
@@ -65,12 +77,18 @@ def adicao():
 # Exclusão de medidas
 @medida_bp.route("/inicio/<id>", methods=['POST'])
 def exclusao(id):
-	id = int(id)
-	
-    # Verificação se o usuário logado é o dono da medida
-	
-	return redirect("/inicio")
-
+	# Obtendo o token do cookie
+	token = request.cookies.get('token')
+	if not token:
+		# Se o token não estiver presente, redirecionar para a página de login
+		return redirect("/login")
+	headers = {'Authorization': f'Bearer {token}'}
+	respostaAPI = requests.delete(f'{apiurl}/medidas/{id}', headers=headers)
+	if respostaAPI.status_code == 200:
+		return redirect("/inicio")
+	else:
+		print(respostaAPI.status_code, respostaAPI.json())
+		return redirect("/inicio")
 
 # Edição das medidas
 @medida_bp.route("/inicio/editar/<id>", methods=['POST', 'GET'])
