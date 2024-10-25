@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, redirect
 import src.models.usuario as models
 from pydantic import ValidationError
 import requests
@@ -9,6 +9,10 @@ usuario_bp = Blueprint('usuario', __name__)
 # Cadastro de usuários
 @usuario_bp.route("/cadastro", methods=['POST','GET'])
 def cadastro():
+	token = request.cookies.get('token')
+	if token:
+		# Se o token não estiver presente, redirecionar para a página de login
+		return redirect("/inicio")
 	# Envio do formulário
 	if request.method == 'POST':
 		# Obtendo dados enviados pelo formulário

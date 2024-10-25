@@ -10,6 +10,10 @@ login_bp = Blueprint('login', __name__)
 @login_bp.route("/")
 @login_bp.route("/login", methods=['POST','GET'])
 def login():
+	token = request.cookies.get('token')
+	if token:
+		# Se o token não estiver presente, redirecionar para a página de login
+		return redirect("/inicio")
 	# Envio do formulário
 	if request.method == 'POST':
 		# Obtendo dados enviados pelo formulário
