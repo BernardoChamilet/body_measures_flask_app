@@ -3,7 +3,7 @@ from datetime import date
 
 # Classe para validação de dados de medidas
 class Medida(BaseModel):
-    data: date
+    data: str
     peso: float
     ombro: float
     peito: float
