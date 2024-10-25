@@ -11,3 +11,5 @@ load_dotenv(dotenv_path=env_path)
 port = int(os.getenv('PORT'))
 
 debug = bool(os.getenv('DEBUG'))
+
+apiurl = os.getenv('APIURL')
