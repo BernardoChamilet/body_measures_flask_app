@@ -12,6 +12,9 @@
 				<br>
 				<h1>Editar</h1>
 				<br>
+				{% if msgErro %}
+					<div id="msgError">{{msgErro}}</div>
+				{% endif %}
 				{% if editado %}
 				<form action="/inicio/editar/{{ editado[0] }}" method='POST'>
 					<div class="label-float">
