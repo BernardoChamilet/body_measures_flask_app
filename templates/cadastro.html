@@ -16,6 +16,33 @@
 					erro.textContent = '';
 				}
 			}
+			function verificarSenha() {
+				var senha = document.getElementById('senha').value;
+				var erroS = document.getElementById('erroS');
+				if (senha.length < 6) {
+					erroS.textContent = 'Senha deve ter no mínimo 6 caracteres';
+				} else {
+					erroS.textContent = '';
+				}
+			}
+			function verificarNome() {
+				var nome = document.getElementById('nome').value;
+				var erroN = document.getElementById('erroN');
+				if (nome.length < 2) {
+					erroN.textContent = 'Nome deve ter no mínimo 2 caracteres';
+				} else {
+					erroN.textContent = '';
+				}
+			}
+			function verificarUsuario() {
+				var usuario = document.getElementById('usuario').value;
+				var erroU = document.getElementById('erroU')
+				if (usuario.length < 7) {
+					erroU.textContent = 'Usuário deve ter no mínimo 7 caracteres';
+				} else {
+					erroU.textContent = '';
+				}
+			}
 		</script>
 	</head>
 	<body>
@@ -31,16 +58,19 @@
 					<div id="msgError">{{msgErro}}</div>
 				{% endif %}
 				<form action="/cadastro" method='POST'>
+					<div id="erroU" class="erro"></div>
 					<div class="label-float">
-						<input type='text' id='usuario' name='usuario' value="{{ dadosForm.get('usuario', '') }}" required>
+						<input type='text' id='usuario' name='usuario' value="{{ dadosForm.get('usuario', '') }}" required onkeyup="verificarUsuario()" onchange="verificarUsuario()">
 						<label for='usuario'>Digite seu nome de usuário</label>
 					</div>
+					<div id="erroN" class="erro"></div>
 					<div class="label-float">
-						<input type='text' id='nome' name='nome' value="{{ dadosForm.get('nome', '') }}" required>
+						<input type='text' id='nome' name='nome' value="{{ dadosForm.get('nome', '') }}" required onkeyup="verificarNome()" onchange="verificarNome()">
 						<label for='nome'>Digite seu nome</label>
 					</div>
+					<div id="erroS" class="erro"></div>
 					<div class="label-float">
-						<input type='password' id='senha' name='senha' value="{{ dadosForm.get('senha', '') }}" required>
+						<input type='password' id='senha' name='senha' value="{{ dadosForm.get('senha', '') }}" required onkeyup="verificarSenha()" onchange="verificarSenha()">
 						<label for='senha'>Digite sua senha</label>
 					</div>
 					<div id="erro" class="erro"></div>
