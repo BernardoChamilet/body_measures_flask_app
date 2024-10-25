@@ -13,3 +13,5 @@ port = int(os.getenv('PORT'))
 debug = bool(os.getenv('DEBUG'))
 
 apiurl = os.getenv('APIURL')
+
+secret_key = os.getenv('SECRET_KEY')
