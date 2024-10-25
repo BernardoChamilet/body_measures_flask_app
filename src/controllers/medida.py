@@ -1,4 +1,6 @@
 from flask import Blueprint, request, render_template, redirect
+import requests
+from src.config.config import apiurl
 
 medida_bp = Blueprint('medida', __name__)
 
@@ -6,8 +8,34 @@ medida_bp = Blueprint('medida', __name__)
 @medida_bp.route("/inicio", methods=['GET'])
 def inicio():
 	# Renderização da página de início
-	nomeLogado = 'Fulano'
-	medidas = [0,1,2,3,4,5,6,7,8,9]
+	# Obtendo o token do cookie
+	token = request.cookies.get('token')
+	if not token:
+		# Se o token não estiver presente, redirecionar para a página de login
+		return redirect("/login")
+	headers = {'Authorization': f'Bearer {token}'}
+	# Fazendo requisição a API para buscar dados do usuário logado
+	respostaAPI = requests.get(f'{apiurl}/usuarios/me', headers=headers)
+	if respostaAPI.status_code == 200:
+		nomeLogado = respostaAPI.json().get('nome')
+	elif respostaAPI.status_code == 401:
+		# Token faltando, inválido ou expirado
+		return redirect("/login")
+	else:
+		msgErro = "Ocorreu um erro em nosso servidor, tente novamente" #500
+		return render_template("login.html", msgErro=msgErro)
+	# Fazendo requisição a API para buscar medidas do usuários
+	respostaAPI = requests.get(f'{apiurl}/medidas', headers=headers)
+	if respostaAPI.status_code == 200:
+		medidas = respostaAPI.json()
+	elif respostaAPI.status_code == 204:
+		medidas = []
+	elif respostaAPI.status_code == 401:
+		# Token faltando, inválido ou expirado
+		return redirect("/login")
+	else:
+		msgErro = "Ocorreu um erro em nosso servidor, tente novamente" #500
+		return render_template("login.html", msgErro=msgErro)
 	return render_template("inicio.html", nome=nomeLogado, medidas=medidas)
 
 # Adição de medidas

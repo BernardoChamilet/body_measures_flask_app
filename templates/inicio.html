@@ -33,23 +33,23 @@
 					</tr>
 					{% for linha in medidas %}
 					<tr>
-						<td>{{ linha[1] }}</td>
-						<td>{{ linha[2] }}</td>
-						<td>{{ linha[3] }}</td>
-						<td>{{ linha[4] }}</td>
-						<td>{{ linha[5] }}</td>
-						<td>{{ linha[6] }}</td>
-						<td>{{ linha[7] }}</td>
-						<td>{{ linha[8] }}</td>
-						<td>{{ linha[9] }}</td>
-						<td>{{ linha[10] }}</td>
+						<td>{{ linha.data }}</td>
+						<td>{{ linha.peso }}</td>
+						<td>{{ linha.ombro }}</td>
+						<td>{{ linha.peito }}</td>
+						<td>{{ linha.braco }}</td>
+						<td>{{ linha.antebraco }}</td>
+						<td>{{ linha.cintura }}</td>
+						<td>{{ linha.quadril }}</td>
+						<td>{{ linha.coxa }}</td>
+						<td>{{ linha.panturrilha }}</td>
 						<td>
-							<form action="/inicio/editar/{{ linha[0] }}" method='GET'>
+							<form action="/inicio/editar/{{ linha.id }}" method='GET'>
 								<button type='submit'><i class="fa-solid fa-pencil" style="font-size: 1.25em;"></i></button>
 							</form>
 						</td>
 						<td>
-							<form action="/inicio/{{ linha[0] }}" method='POST' onsubmit="temCerteza(event);">
+							<form action="/inicio/{{ linha.id }}" method='POST' onsubmit="temCerteza(event);">
 								<button type='submit' style="background-color:red"><i class="fa-solid fa-trash-can" style="font-size: 1.25em;"></i></button>
 							</form>
 						</td>		
