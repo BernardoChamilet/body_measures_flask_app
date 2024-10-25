@@ -12,6 +12,10 @@
             <br>
             <h1>Adicione novas medidas</h1>
             <h1>(centímetros)</h1>
+            <br>
+            {% if msgErro %}
+				<div id="msgError">{{msgErro}}</div>
+			{% endif %}
             <form action="/inicio/adicionar" method='POST'>
                 <div class="label-float">
                     <input type='date' id='data' name='data' required>
