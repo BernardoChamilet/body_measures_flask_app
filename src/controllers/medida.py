@@ -59,7 +59,7 @@ def adicao():
 			msgErro = "Preencha os campos corretamente"
 			return render_template("adicionar.html",msgErro=msgErro)
 		medidaDict = medida.model_dump()
-		# Fazendo requisição a API para buscar dados do usuário logado
+		# Fazendo requisição a API para adcionar medidas
 		headers = {'Authorization': f'Bearer {token}'}
 		respostaAPI = requests.post(f'{apiurl}/medidas', json=medidaDict, headers=headers)
 		if respostaAPI.status_code == 201:
@@ -82,6 +82,7 @@ def exclusao(id):
 	if not token:
 		# Se o token não estiver presente, redirecionar para a página de login
 		return redirect("/login")
+	# Chamando API para deletar medida
 	headers = {'Authorization': f'Bearer {token}'}
 	respostaAPI = requests.delete(f'{apiurl}/medidas/{id}', headers=headers)
 	if respostaAPI.status_code == 200:
@@ -93,26 +94,42 @@ def exclusao(id):
 # Edição das medidas
 @medida_bp.route("/inicio/editar/<id>", methods=['POST', 'GET'])
 def edicao(id):
-	# Verificação se o usuário logado é o dono da medida	
+	# Obtendo o token do cookie
+	token = request.cookies.get('token')
+	if not token:
+		# Se o token não estiver presente, redirecionar para a página de login
+		return redirect("/login")	
 	#return redirect("/inicio")
 	# Envio do formulário
 	if request.method == 'POST':
 		#Obtendo dados enviados pelo formulário
 		dados = request.form
-		#data = request.form.get('data')
-        #peso = request.form.get('peso')
-		#ombro = request.form.get('ombro')
-		#peito = request.form.get('peito')
-		#braco = request.form.get('braco')
-		#antebraco = request.form.get('antebraco')
-		#cintura = request.form.get('cintura')
-		#quadril = request.form.get('quadril')
-		#coxa = request.form.get('coxa')
-		#panturrilha = request.form.get('panturrilha')
-		
-		return render_template("editar.html",sucesso=True)
+		# Validando dados
+		try:
+			medida = models.Medida(**dados)
+		except ValidationError:
+			msgErro = "Preencha os campos corretamente"
+			return render_template("editar.html",msgErro=msgErro)
+		medidaDict = medida.model_dump()
+		# Fazendo requisição a API para atualizar medida
+		headers = {'Authorization': f'Bearer {token}'}
+		respostaAPI = requests.put(f'{apiurl}/medidas/{id}', json=medidaDict, headers=headers)
+		if respostaAPI.status_code == 204:
+			return render_template("editar.html",sucesso=True)
+		elif respostaAPI.status_code == 400:
+			msgErro = "Preencha os campos corretamente"
+			return render_template("editar.html",msgErro=msgErro)
+		else:
+			msgErro = "Ocorreu um erro em nosso servidor, tente novamente" #500, 403 ou 404
+			return render_template("editar.html",msgErro=msgErro)
 	# Renderização da página de edição de medidas
 	if request.method == 'GET':
-		
-		editadas = [0,1,2,3,4,5,6,7,8,9]
-		return(render_template("editar.html", editado = editadas))
+		# Fazendo requisição a API para atualizar medida
+		headers = {'Authorization': f'Bearer {token}'}
+		respostaAPI = requests.get(f'{apiurl}/medidas/{id}', headers=headers)
+		if respostaAPI.status_code == 200:
+			editadas = respostaAPI.json()
+			return(render_template("editar.html", editado = editadas))
+		else:
+			print(respostaAPI.status_code, respostaAPI.json())
+			return redirect("/inicio")
