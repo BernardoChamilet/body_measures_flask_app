@@ -31,8 +31,9 @@ def login():
 			# sucesso 200
 			# Colocando token nos cookies do navegador
 			token = respostaAPI.json().get('token')
+			expiration = respostaAPI.json().get("expiration")
 			response = make_response(redirect("/inicio"))
-			response.set_cookie('token', token, httponly=True, samesite='Strict')
+			response.set_cookie('token', token, httponly=True, samesite='Strict', expires=expiration)
 			return response
 		elif respostaAPI.status_code == 401:
 			msgErro = "Usuário ou senha incorreto(os)"
