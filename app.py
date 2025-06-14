@@ -17,4 +17,4 @@ from src.controllers.medida import medida_bp
 app.register_blueprint(medida_bp)
 
 if __name__ == "__main__":
-	app.run(port=port)
+	app.run(host="0.0.0.0", port=port)
